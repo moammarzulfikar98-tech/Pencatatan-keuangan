@@ -358,14 +358,17 @@ async function loadData() {
     }
 
     transactions = data.map(item => ({
-        id: item.id,
-        type: item.type,
-        desc: item.description,
-        amount: Number(item.amount),
-        account: item.account,
-        category: item.category,
-        date: item.transaction_date
+    id: item.id,
+    type: item.type,
+    desc: item.description,
+    amount: Number(item.amount),
+    account: item.account,
+    category: item.category,
+    date: item.transaction_date
     }));
+
+    console.log("Data dari Supabase:", data);
+    console.log("Transactions:", transactions);
 
     render();
 }
