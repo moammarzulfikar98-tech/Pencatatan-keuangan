@@ -354,25 +354,27 @@ async function loadData() {
         .select("*")
         .order("transaction_date", { ascending: false });
 
+    console.log(data);
+    console.log(error);
+
     if (error) {
         console.error(error);
         return;
     }
 
     transactions = data.map(item => ({
-    id: item.id,
-    type: item.type,
-    desc: item.description,
-    amount: Number(item.amount),
-    account: item.account,
-    category: item.category,
-    date: item.transaction_date
-}));
+        id: item.id,
+        type: item.type,
+        desc: item.description,
+        amount: Number(item.amount),
+        account: item.account,
+        category: item.category,
+        date: item.transaction_date
+    }));
 
-console.log("Data dari Supabase:", data);
-console.log("Transactions:", transactions);
+    console.log(transactions);
 
-render();
+    render();
 }
 
 async function saveData() {
@@ -430,6 +432,8 @@ function accountBalance(acc) {
 }
 
 function render() {
+  console.log("Transactions:", transactions);
+  
   let income = 0, expense = 0;
   transactions.forEach(t => { if (t.type === 'income') income += t.amount; else expense += t.amount; });
   const totalSaldo = income - expense;
