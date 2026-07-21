@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catatan Keuangan</title>
+<style>
+  :root {
+    --bg: #eef1f6;
+    --card: #ffffff;
+    --border: #e7e9ee;
+    --text: #1c2233;
+    --muted: #8a90a3;
+    --blue: #1e3a8a;
+    --blue-light: #2451c4;
+    --income: #16a34a;
+    --expense: #dc2626;
+    --accent: #2451c4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; padding-bottom: 90px; }
+
+  .header {
+    padding: 20px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 { font-size: 20px; font-weight: 700; margin: 0; }
+  .header .greet { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .header .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--income); display: inline-block; }
+  .power-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #f1f2f6; border: none; color: var(--muted);
+    font-size: 15px; cursor: pointer;
+  }
+
+  .net-card {
+    margin: 12px 20px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    border-radius: 20px;
+    padding: 20px;
+    color: #fff;
+  }
+  .net-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .net-label { font-size: 11px; letter-spacing: 0.5px; opacity: 0.85; text-transform: uppercase; }
+  .sync-badge {
+    font-size: 11px; background: rgba(255,255,255,0.15);
+    padding: 4px 10px; border-radius: 20px; cursor: pointer; border: none; color: #fff;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .net-amount { font-size: 30px; font-weight: 700; margin: 6px 0 16px; }
+  .net-sub-row { display: flex; gap: 10px; }
+  .net-sub {
+    flex: 1; background: rgba(255,255,255,0.12); border-radius: 12px;
+    padding: 10px 12px; cursor: pointer;
+  }
+  .net-sub .l { font-size: 10px; opacity: 0.8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px;}
+  .net-sub .v { font-size: 15px; font-weight: 600; }
+
+  .section-title {
+    font-size: 14px; font-weight: 600; margin: 20px 20px 10px; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .acc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 20px;
+  }
+  .acc-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.1s;
+  }
+  .acc-card:active { transform: scale(0.96); }
+  .acc-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; margin-bottom: 8px;
+  }
+  .acc-name { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+  .acc-val { font-size: 13px; font-weight: 700; }
+  .acc-add {
+    background: var(--card); border: 1.5px dashed var(--border); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px;
+    cursor: pointer; color: var(--muted); font-size: 11px; min-height: 84px;
+  }
+
+  .tx-list { padding: 0 20px; display: flex; flex-direction: column; gap: 8px; }
+  .tx {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .tx-left { display: flex; align-items: center; gap: 10px; }
+  .tx-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+  }
+  .tx-icon.income { background: #dcfce7; color: var(--income); }
+  .tx-icon.expense { background: #fee2e2; color: var(--expense); }
+  .tx-info .tx-desc { font-size: 13px; font-weight: 600; }
+  .tx-info .tx-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .tx-amount { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .tx-amount.income { color: var(--income); }
+  .tx-amount.expense { color: var(--expense); }
+  .empty { text-align: center; color: var(--muted); padding: 30px 0; font-size: 13px; }
+
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 0 18px;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+  }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--muted); font-size: 10px; padding: 4px 10px;
+  }
+  .nav-btn.active { color: var(--accent); }
+  .nav-icon { font-size: 18px; }
+  .nav-add {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 24px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; margin-top: -28px; box-shadow: 0 4px 12px rgba(36,81,196,0.35);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 50; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: #fff; width: 100%; max-width: 480px;
+    border-radius: 20px 20px 0 0; padding: 20px 20px 28px;
+    max-height: 85vh; overflow-y: auto; position: relative;
+  }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 16px; }
+  .modal h2 { font-size: 16px; margin: 0 0 16px; }
+  .type-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+  .type-btn {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: #fff; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .type-btn.active-income { background: #dcfce7; border-color: var(--income); color: var(--income); }
+  .type-btn.active-expense { background: #fee2e2; border-color: var(--expense); color: var(--expense); }
+  .field-label { font-size: 11px; color: var(--muted); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+  input, select {
+    width: 100%; padding: 11px 12px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 14px; background: #fafbfc; color: var(--text);
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); background: #fff; }
+  button.submit {
+    width: 100%; padding: 13px; border: none; border-radius: 12px;
+    background: var(--accent); color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; margin-top: 18px;
+  }
+  .close-modal {
+    position: absolute; top: 16px; right: 16px; background: #f1f2f6; border: none;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer; color: var(--muted);
+  }
+  .del-inline { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 8px; }
+
+  .insight-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; margin: 0 20px 12px;
+  }
+  .insight-card .it { font-size: 12px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.3px;}
+  .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 4px; margin-top: 4px; overflow: hidden; }
+  .cat-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+
+  .filters { display: flex; gap: 8px; padding: 0 20px 12px; }
+  .filters select { flex: 1; font-size: 12px; padding: 8px 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page active" id="page-home">
+    <div class="header">
+      <div>
+        <h1>Beranda</h1>
+        <div class="greet"><span class="dot"></span> Halo, Ammar</div>
+      </div>
+      <button class="power-btn" title="Info">i</button>
+    </div>
+
+    <div class="net-card">
+      <div class="top-row">
+        <div class="net-label">Kekayaan bersih</div>
+        <button class="sync-badge" onclick="render()">↻ Tersinkron</button>
+      </div>
+      <div class="net-amount" id="netWorthVal">Rp0</div>
+      <div class="net-sub-row">
+        <div class="net-sub" onclick="goPage('history')">
+          <div class="l">Total saldo</div>
+          <div class="v" id="totalSaldoVal">Rp0</div>
+        </div>
+        <div class="net-sub" onclick="goPage('insight')">
+          <div class="l">Pengeluaran bulan ini</div>
+          <div class="v" id="monthExpenseVal">Rp0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Saldo akun</div>
+    <div class="acc-grid" id="accGrid"></div>
+
+    <div class="section-title">Transaksi terbaru</div>
+    <div class="tx-list" id="txListHome"></div>
+  </div>
+
+  <div class="page" id="page-history">
+    <div class="header">
+      <div><h1>Riwayat</h1><div class="greet">Semua transaksi</div></div>
+    </div>
+    <div class="filters" style="padding-bottom:8px;">
+      <input type="text" id="searchInput" placeholder="Cari keterangan...">
+    </div>
+    <div class="filters">
+      <select id="filterType"><option value="all">Semua jenis</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select>
+      <select id="sortOrder"><option value="newest">Terbaru</option><option value="oldest">Terlama</option><option value="highest">Jumlah tertinggi</option></select>
+    </div>
+    <div class="filters">
+      <select id="filterAccount"><option value="all">Semua akun</option></select>
+      <select id="filterCategory"><option value="all">Semua kategori</option></select>
+    </div>
+    <div class="tx-list" id="txListFull"></div>
+  </div>
+
+  <div class="page" id="page-insight">
+    <div class="header">
+      <div><h1>Wawasan</h1><div class="greet">Ringkasan keuangan Anda</div></div>
+    </div>
+    <div class="insight-card">
+      <div class="it">Ringkasan</div>
+      <div class="cat-row"><span>Pemasukan</span><span style="color:var(--income);font-weight:700" id="insIncome">Rp0</span></div>
+      <div class="cat-row"><span>Pengeluaran</span><span style="color:var(--expense);font-weight:700" id="insExpense">Rp0</span></div>
+    </div>
+    <div class="insight-card">
+      <div class="it">Pengeluaran per kategori</div>
+      <div id="catBreakdown"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="navHome" onclick="goPage('home')">
+      <span class="nav-icon">⌂</span>Home
+    </button>
+    <button class="nav-btn" id="navHistory2" onclick="goPage('history')">
+      <span class="nav-icon">▤</span>Transaksi
+    </button>
+    <button class="nav-add" onclick="openModal()">+</button>
+    <button class="nav-btn" id="navInsight" onclick="goPage('insight')">
+      <span class="nav-icon">◔</span>Insight
+    </button>
+    <button class="nav-btn" id="navHistory" onclick="goPage('history')">
+      <span class="nav-icon">↻</span>History
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <div class="modal-handle"></div>
+    <h2 id="modalTitle">Tambah transaksi</h2>
+    <form id="txForm">
+      <input type="hidden" id="editId" value="">
+      <div class="type-toggle" id="typeToggle">
+        <div class="type-btn active-income" id="btnIncome" data-type="income">Pemasukan</div>
+        <div class="type-btn" id="btnExpense" data-type="expense">Pengeluaran</div>
+      </div>
+      <div class="field-label">Keterangan</div>
+      <input type="text" id="descInput" placeholder="mis. Gaji, Makan siang" required>
+      <div class="field-label">Jumlah (Rp)</div>
+      <input type="number" id="amountInput" placeholder="0" min="0" step="1" required>
+      <div class="field-label">Akun</div>
+      <select id="accountInput">
+        <option value="Tunai">Tunai</option>
+        <option value="Rekening 1">Rekening 1</option>
+        <option value="Rekening 2">Rekening 2</option>
+        <option value="Rekening 3">Rekening 3</option>
+        <option value="E-Wallet">E-Wallet</option>
+      </select>
+      <div class="field-label">Kategori</div>
+      <select id="categoryInput">
+        <option value="Umum">Umum</option>
+        <option value="Makanan">Makanan</option>
+        <option value="Transportasi">Transportasi</option>
+        <option value="Belanja">Belanja</option>
+        <option value="Tagihan">Tagihan</option>
+        <option value="Hiburan">Hiburan</option>
+        <option value="Gaji">Gaji</option>
+        <option value="Investasi">Investasi</option>
+        <option value="Lainnya">Lainnya</option>
+      </select>
+      <div class="field-label">Tanggal</div>
+      <input type="date" id="dateInput" required>
+      <button type="submit" class="submit">Simpan transaksi</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let transactions = [];
+const STORAGE_KEY = 'transactions';
+let currentType = 'income';
+
+const ACCOUNTS = ['Tunai','Rekening 1','Rekening 2','Rekening 3','E-Wallet'];
+const ACC_ICONS = { 'Tunai':'💵', 'Rekening 1':'🏦', 'Rekening 2':'🏦', 'Rekening 3':'🏦', 'E-Wallet':'📱' };
+const ACC_COLORS = { 'Tunai':'#dcfce7', 'Rekening 1':'#dbeafe', 'Rekening 2':'#ede9fe', 'Rekening 3':'#fee2e2', 'E-Wallet':'#fef3c7' };
+const CAT_ICONS = { 'Umum':'●','Makanan':'🍔','Transportasi':'🚗','Belanja':'🛍','Tagihan':'🧾','Hiburan':'🎬','Gaji':'💰','Investasi':'📈','Lainnya':'✳' };
+
+function formatRupiah(n) {
+  return 'Rp' + Math.round(n).toLocaleString('id-ID');
+}
+
+async function loadData() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY);
+    transactions = result ? JSON.parse(result.value) : [];
+  } catch (e) { transactions = []; }
+  render();
+}
+
+async function saveData() {
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(transactions)); }
+  catch (e) { console.error('Gagal menyimpan', e); }
+}
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (name === 'home') document.getElementById('navHome').classList.add('active');
+  if (name === 'history') { document.getElementById('navHistory').classList.add('active'); document.getElementById('navHistory2').classList.add('active'); }
+  if (name === 'insight') document.getElementById('navInsight').classList.add('active');
+  render();
+}
+
+function openModal() {
+  document.getElementById('modalTitle').textContent = 'Tambah transaksi';
+  document.getElementById('editId').value = '';
+  document.getElementById('txForm').reset();
+  document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+  setType('income');
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+function setType(type) {
+  currentType = type;
+  document.getElementById('btnIncome').classList.toggle('active-income', type === 'income');
+  document.getElementById('btnExpense').classList.toggle('active-expense', type === 'expense');
+}
+window.editTx = function(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('modalTitle').textContent = 'Ubah transaksi';
+  document.getElementById('editId').value = t.id;
+  document.getElementById('descInput').value = t.desc;
+  document.getElementById('amountInput').value = t.amount;
+  document.getElementById('accountInput').value = t.account;
+  document.getElementById('categoryInput').value = t.category;
+  document.getElementById('dateInput').value = t.date;
+  setType(t.type);
+  document.getElementById('modalOverlay').classList.add('active');
+}
+window.goPage = goPage;
+window.openModal = openModal;
+window.closeModal = closeModal;
+
+function accountBalance(acc) {
+  let bal = 0;
+  transactions.forEach(t => {
+    if (t.account !== acc) return;
+    bal += t.type === 'income' ? t.amount : -t.amount;
+  });
+  return bal;
+}
+
+function render() {
+  let income = 0, expense = 0;
+  transactions.forEach(t => { if (t.type === 'income') income += t.amount; else expense += t.amount; });
+  const totalSaldo = income - expense;
+
+  document.getElementById('netWorthVal').textContent = formatRupiah(totalSaldo);
+  document.getElementById('totalSaldoVal').textContent = formatRupiah(totalSaldo);
+  document.getElementById('insIncome').textContent = formatRupiah(income);
+  document.getElementById('insExpense').textContent = formatRupiah(expense);
+
+  const now = new Date();
+  const monthExpense = transactions
+    .filter(t => t.type === 'expense' && (() => { const d = new Date(t.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })())
+    .reduce((sum, t) => sum + t.amount, 0);
+  document.getElementById('monthExpenseVal').textContent = formatRupiah(monthExpense);
+
+  const accGrid = document.getElementById('accGrid');
+  accGrid.innerHTML = ACCOUNTS.map(acc => `
+    <div class="acc-card" onclick="goPage('history')">
+      <div class="acc-icon" style="background:${ACC_COLORS[acc]}">${ACC_ICONS[acc]}</div>
+      <div class="acc-name">${acc}</div>
+      <div class="acc-val">${formatRupiah(accountBalance(acc))}</div>
+    </div>
+  `).join('') + `<div class="acc-add" onclick="openModal()">+<div>Tambah</div></div>`;
+
+  const recent = [...transactions].sort((a,b) => new Date(b.date) - new Date(a.date) || b.id - a.id).slice(0,5);
+  document.getElementById('txListHome').innerHTML = renderTxList(recent);
+
+  const filterType = document.getElementById('filterType')?.value || 'all';
+  const sortOrder = document.getElementById('sortOrder')?.value || 'newest';
+  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+  const filterAccount = document.getElementById('filterAccount')?.value || 'all';
+  const filterCategory = document.getElementById('filterCategory')?.value || 'all';
+
+  const accSel = document.getElementById('filterAccount');
+  if (accSel && accSel.options.length <= 1) {
+    ACCOUNTS.forEach(acc => accSel.insertAdjacentHTML('beforeend', `<option value="${acc}">${acc}</option>`));
+  }
+  const catSel = document.getElementById('filterCategory');
+  if (catSel && catSel.options.length <= 1) {
+    Object.keys(CAT_ICONS).forEach(cat => catSel.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`));
+  }
+
+  let list = [...transactions];
+  if (filterType !== 'all') list = list.filter(t => t.type === filterType);
+  if (filterAccount !== 'all') list = list.filter(t => t.account === filterAccount);
+  if (filterCategory !== 'all') list = list.filter(t => t.category === filterCategory);
+  if (searchVal) list = list.filter(t => t.desc.toLowerCase().includes(searchVal));
+  if (sortOrder === 'newest') list.sort((a,b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
+  else if (sortOrder === 'oldest') list.sort((a,b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+  else if (sortOrder === 'highest') list.sort((a,b) => b.amount - a.amount);
+  document.getElementById('txListFull').innerHTML = renderTxList(list, true);
+
+  const catTotals = {};
+  transactions.filter(t => t.type === 'expense').forEach(t => {
+    catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+  });
+  const maxCat = Math.max(1, ...Object.values(catTotals));
+  const catEntries = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
+  const catBreakdown = document.getElementById('catBreakdown');
+  if (catEntries.length === 0) {
+    catBreakdown.innerHTML = '<div class="empty">Belum ada pengeluaran</div>';
+  } else {
+    catBreakdown.innerHTML = catEntries.map(([cat, val]) => `
+      <div class="cat-row" style="flex-direction:column;align-items:stretch;border-bottom:none;padding-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;">
+          <span>${CAT_ICONS[cat]||'●'} ${cat}</span>
+          <span style="font-weight:700">${formatRupiah(val)}</span>
+        </div>
+        <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(val/maxCat*100).toFixed(0)}%"></div></div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderTxList(list, withDelete) {
+  if (list.length === 0) return '<div class="empty">Belum ada catatan transaksi.</div>';
+  return list.map(t => {
+    const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    const sign = t.type === 'income' ? '+' : '-';
+    return `
+      <div class="tx">
+        <div class="tx-left">
+          <div class="tx-icon ${t.type}">${CAT_ICONS[t.category] || '●'}</div>
+          <div class="tx-info">
+            <div class="tx-desc">${escapeHtml(t.desc)}</div>
+            <div class="tx-meta">${escapeHtml(t.account || '')} · ${dateStr}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="tx-amount ${t.type}">${sign} ${formatRupiah(t.amount)}</div>
+          ${withDelete ? `<button class="del-inline" onclick="editTx(${t.id})" aria-label="Ubah">✎</button><button class="del-inline" onclick="deleteTx(${t.id})" aria-label="Hapus">✕</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+window.deleteTx = async function(id) {
+  transactions = transactions.filter(t => t.id !== id);
+  await saveData();
+  render();
+}
+
+document.getElementById('btnIncome').addEventListener('click', () => setType('income'));
+document.getElementById('btnExpense').addEventListener('click', () => setType('expense'));
+
+document.getElementById('txForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const desc = document.getElementById('descInput').value.trim();
+  const amount = parseFloat(document.getElementById('amountInput').value);
+  const account = document.getElementById('accountInput').value;
+  const category = document.getElementById('categoryInput').value;
+  const date = document.getElementById('dateInput').value;
+  const editId = document.getElementById('editId').value;
+  if (!desc || !amount || amount <= 0 || !date) return;
+
+  if (editId) {
+    const idx = transactions.findIndex(t => t.id === Number(editId));
+    if (idx !== -1) transactions[idx] = { ...transactions[idx], type: currentType, desc, amount, account, category, date };
+  } else {
+    transactions.push({ id: Date.now(), type: currentType, desc, amount, account, category, date });
+  }
+  await saveData();
+  closeModal();
+  render();
+});
+
+document.addEventListener('change', (e) => {
+  if (['filterType','sortOrder','filterAccount','filterCategory'].includes(e.target.id)) render();
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'searchInput') render();
+});
+
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+
+document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+loadData();
+</script>
+</body>
+</html>
