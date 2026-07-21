@@ -329,8 +329,12 @@
 
 <script>
 let transactions = [];
-const STORAGE_KEY = 'transactions';
 let currentType = 'income';
+
+const supabase = window.supabase.createClient(
+    "https://tcmngkjrgkmtvdnyydqc.supabase.co",
+    "sb_publishable_qy0g_cQoFggFgsVkzDN1wQ_CiLk9Ds5"
+);
 
 const ACCOUNTS = ['Tunai','Rekening 1','Rekening 2','Rekening 3','E-Wallet'];
 const ACC_ICONS = { 'Tunai':'💵', 'Rekening 1':'🏦', 'Rekening 2':'🏦', 'Rekening 3':'🏦', 'E-Wallet':'📱' };
@@ -342,11 +346,28 @@ function formatRupiah(n) {
 }
 
 async function loadData() {
-  try {
-    const result = await window.storage.get(STORAGE_KEY);
-    transactions = result ? JSON.parse(result.value) : [];
-  } catch (e) { transactions = []; }
-  render();
+
+    const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .order("transaction_date", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    transactions = data.map(item => ({
+        id: item.id,
+        type: item.type,
+        desc: item.description,
+        amount: Number(item.amount),
+        account: item.account,
+        category: item.category,
+        date: item.transaction_date
+    }));
+
+    render();
 }
 
 async function saveData() {
@@ -509,9 +530,22 @@ function escapeHtml(str) {
 }
 
 window.deleteTx = async function(id) {
-  transactions = transactions.filter(t => t.id !== id);
-  await saveData();
-  render();
+
+    if (!confirm("Hapus transaksi ini?")) return;
+
+    const { error } = await supabase
+        .from("transactions")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        console.error(error);
+        alert(error.message);
+        return;
+    }
+
+    await loadData();
+}
 }
 
 document.getElementById('btnIncome').addEventListener('click', () => setType('income'));
@@ -528,14 +562,46 @@ document.getElementById('txForm').addEventListener('submit', async (e) => {
   if (!desc || !amount || amount <= 0 || !date) return;
 
   if (editId) {
-    const idx = transactions.findIndex(t => t.id === Number(editId));
-    if (idx !== -1) transactions[idx] = { ...transactions[idx], type: currentType, desc, amount, account, category, date };
-  } else {
-    transactions.push({ id: Date.now(), type: currentType, desc, amount, account, category, date });
-  }
-  await saveData();
-  closeModal();
-  render();
+
+    const { error } = await supabase
+        .from("transactions")
+        .update({
+            type: currentType,
+            description: desc,
+            amount: amount,
+            account: account,
+            category: category,
+            transaction_date: date
+        })
+        .eq("id", Number(editId));
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+} else {
+
+    const { error } = await supabase
+        .from("transactions")
+        .insert([{
+            type: currentType,
+            description: desc,
+            amount: amount,
+            account: account,
+            category: category,
+            transaction_date: date
+        }]);
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+}
+
+await loadData();
+closeModal();
 });
 
 document.addEventListener('change', (e) => {
@@ -552,5 +618,10 @@ document.getElementById('modalOverlay').addEventListener('click', (e) => {
 document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
 loadData();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</body>
+</html>
 </body>
 </html>
