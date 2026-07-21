@@ -371,8 +371,7 @@ async function loadData() {
 }
 
 async function saveData() {
-  try { await window.storage.set(STORAGE_KEY, JSON.stringify(transactions)); }
-  catch (e) { console.error('Gagal menyimpan', e); }
+    // Tidak digunakan lagi karena data disimpan langsung ke Supabase
 }
 
 function goPage(name) {
