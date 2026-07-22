@@ -327,7 +327,7 @@
   </div>
 </div>
   
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 let transactions = [];
@@ -336,8 +336,13 @@ let currentType = 'income';
 const supabaseClient = window.supabase.createClient(
     "https://tcmngkjrgkmtvdnyydqc.supabase.co",
     "sb_publishable_qy0g_cQoFggFgsVkzDN1wQ_CiLk9Ds5"
+
 );
 
+console.log("Supabase =", window.supabase);
+console.log("Client =", supabaseClient);
+console.log("typeof from =", typeof supabaseClient.from);
+  
 const ACCOUNTS = ['Tunai','Rekening 1','Rekening 2','Rekening 3','E-Wallet'];
 const ACC_ICONS = { 'Tunai':'💵', 'Rekening 1':'🏦', 'Rekening 2':'🏦', 'Rekening 3':'🏦', 'E-Wallet':'📱' };
 const ACC_COLORS = { 'Tunai':'#dcfce7', 'Rekening 1':'#dbeafe', 'Rekening 2':'#ede9fe', 'Rekening 3':'#fee2e2', 'E-Wallet':'#fef3c7' };
