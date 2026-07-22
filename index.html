@@ -303,7 +303,7 @@
       <div class="field-label">Akun</div>
       <select id="accountInput">
         <option value="Tunai">Tunai</option>
-        <option value="Rekening 1">Rekening 1</option>
+        <option value="BCA">Rekening 1</option>
         <option value="Rekening 2">Rekening 2</option>
         <option value="Rekening 3">Rekening 3</option>
         <option value="E-Wallet">E-Wallet</option>
@@ -343,9 +343,9 @@ console.log("Supabase =", window.supabase);
 console.log("Client =", supabaseClient);
 console.log("typeof from =", typeof supabaseClient.from);
   
-const ACCOUNTS = ['Tunai','Rekening 1','Rekening 2','Rekening 3','E-Wallet'];
-const ACC_ICONS = { 'Tunai':'💵', 'Rekening 1':'🏦', 'Rekening 2':'🏦', 'Rekening 3':'🏦', 'E-Wallet':'📱' };
-const ACC_COLORS = { 'Tunai':'#dcfce7', 'Rekening 1':'#dbeafe', 'Rekening 2':'#ede9fe', 'Rekening 3':'#fee2e2', 'E-Wallet':'#fef3c7' };
+const ACCOUNTS = ['Tunai','BCA','Rekening 2','Rekening 3','E-Wallet'];
+const ACC_ICONS = { 'Tunai':'💵', 'BCA':'🏦', 'Rekening 2':'🏦', 'Rekening 3':'🏦', 'E-Wallet':'📱' };
+const ACC_COLORS = { 'Tunai':'#dcfce7', 'BCA':'#dbeafe', 'Rekening 2':'#ede9fe', 'Rekening 3':'#fee2e2', 'E-Wallet':'#fef3c7' };
 const CAT_ICONS = { 'Umum':'●','Makanan':'🍔','Transportasi':'🚗','Belanja':'🛍','Tagihan':'🧾','Hiburan':'🎬','Gaji':'💰','Investasi':'📈','Lainnya':'✳' };
 
 function formatRupiah(n) {
