@@ -469,7 +469,7 @@ function render() {
 
   const accSel = document.getElementById('filterAccount');
   if (accSel && accSel.options.length <= 1) {
-    ACCOUNTS.forEach(acc => accSelAdjacentHTML('beforeend', `<option value="${acc}">${acc}</option>`));
+    ACCOUNTS.forEach(acc => accSel.insertAdjacentHTML('beforeend', `<option value="${acc}">${acc}</option>`));
   }
   const catSel = document.getElementById('filterCategory');
   if (catSel && catSel.options.length <= 1) {
