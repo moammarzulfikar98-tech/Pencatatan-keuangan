@@ -333,7 +333,7 @@
 let transactions = [];
 let currentType = 'income';
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
     "https://tcmngkjrgkmtvdnyydqc.supabase.co",
     "sb_publishable_qy0g_cQoFggFgsVkzDN1wQ_CiLk9Ds5"
 );
@@ -349,7 +349,7 @@ function formatRupiah(n) {
 
 async function loadData() {
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from("transactions")
         .select("*")
         .order("transaction_date", { ascending: false });
@@ -469,7 +469,7 @@ function render() {
 
   const accSel = document.getElementById('filterAccount');
   if (accSel && accSel.options.length <= 1) {
-    ACCOUNTS.forEach(acc => accSel.insertAdjacentHTML('beforeend', `<option value="${acc}">${acc}</option>`));
+    ACCOUNTS.forEach(acc => accSelAdjacentHTML('beforeend', `<option value="${acc}">${acc}</option>`));
   }
   const catSel = document.getElementById('filterCategory');
   if (catSel && catSel.options.length <= 1) {
@@ -541,7 +541,7 @@ window.deleteTx = async function(id) {
 
     if (!confirm("Hapus transaksi ini?")) return;
 
-    const { error } = await supabase
+    const { error } = await supabaseClientClient
         .from("transactions")
         .delete()
         .eq("id", id);
@@ -570,7 +570,7 @@ document.getElementById('txForm').addEventListener('submit', async (e) => {
 
   if (editId) {
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from("transactions")
         .update({
             type: currentType,
@@ -589,9 +589,9 @@ document.getElementById('txForm').addEventListener('submit', async (e) => {
 
 } else {
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from("transactions")
-        .insert([{
+        ([{
             type: currentType,
             description: desc,
             amount: amount,
@@ -626,9 +626,5 @@ document.getElementById('dateInput').value = new Date().toISOString().split('T')
 loadData();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-</body>
-</html>
 </body>
 </html>
