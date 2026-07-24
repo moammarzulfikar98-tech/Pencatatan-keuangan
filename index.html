@@ -546,7 +546,6 @@
 
 </div>
 </div>
-  </div>
 
   <div class="bottom-nav">
     <button class="nav-btn active" id="navHome" onclick="goPage('home')">
@@ -558,12 +557,8 @@
     <button class="nav-add" onclick="openModal()">+</button>
     <button class="nav-btn" id="navInsight" onclick="goPage('insight')">
       <span class="nav-icon">◔</span>Insight
-    <button class="nav-btn" id="navBudget"
-onclick="goPage('budget')">
-
-    <span class="nav-icon">🎯</span>
-    Budget
-
+    <button class="nav-btn" id="navBudget"  onclick="goPage('budget')">
+      <span class="nav-icon">🎯</span>Budget
 </button>
   </div>
 </div>
@@ -1098,6 +1093,15 @@ document.getElementById("budgetModal")
 });
 
 document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+  
+window.goPage = goPage;
+window.openModal = openModal;
+window.closeModal = closeModal;
+
+window.openBudgetModal = openBudgetModal;
+window.closeBudgetModal = closeBudgetModal;
+window.saveBudget = saveBudget;
+
 loadData();
 </script>
 
