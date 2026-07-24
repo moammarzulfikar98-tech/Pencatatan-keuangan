@@ -402,7 +402,8 @@ function goPage(name) {
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (name === 'home') document.getElementById('navHome').classList.add('active');
-  if (name === 'history') { document.getElementById('navHistory').classList.add('active'); document.getElementById('navHistory2').classList.add('active'); }
+  if (name === 'history') { 
+    document.getElementById('navHistory2').classList.add('active'); }
   if (name === 'insight') document.getElementById('navInsight').classList.add('active');
   render();
 }
