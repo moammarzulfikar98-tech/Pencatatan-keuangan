@@ -263,9 +263,12 @@
       <div class="cat-row"><span>Pengeluaran</span><span style="color:var(--expense);font-weight:700" id="insExpense">Rp0</span></div>
     </div>
     <div class="insight-card">
-      <div class="it">Pengeluaran per kategori</div>
-      <div id="catBreakdown"></div>
-    </div>
+  <div class="it">Pengeluaran per kategori</div>
+
+  <canvas id="categoryChart"></canvas>
+
+  <div id="catBreakdown" style="margin-top:20px;"></div>
+</div>
   </div>
 
   <div class="bottom-nav">
@@ -328,6 +331,8 @@
 </div>
   
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 let transactions = [];
@@ -492,25 +497,70 @@ function render() {
   document.getElementById('txListFull').innerHTML = renderTxList(list, true);
 
   const catTotals = {};
-  transactions.filter(t => t.type === 'expense').forEach(t => {
+
+transactions
+.filter(t => t.type === "expense")
+.forEach(t => {
     catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
-  });
-  const maxCat = Math.max(1, ...Object.values(catTotals));
-  const catEntries = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
-  const catBreakdown = document.getElementById('catBreakdown');
-  if (catEntries.length === 0) {
-    catBreakdown.innerHTML = '<div class="empty">Belum ada pengeluaran</div>';
-  } else {
-    catBreakdown.innerHTML = catEntries.map(([cat, val]) => `
-      <div class="cat-row" style="flex-direction:column;align-items:stretch;border-bottom:none;padding-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;">
-          <span>${CAT_ICONS[cat]||'●'} ${cat}</span>
-          <span style="font-weight:700">${formatRupiah(val)}</span>
-        </div>
-        <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(val/maxCat*100).toFixed(0)}%"></div></div>
-      </div>
-    `).join('');
-  }
+});
+
+const catEntries = Object.entries(catTotals);
+
+const labels = catEntries.map(c => c[0]);
+const values = catEntries.map(c => c[1]);
+
+const colors = [
+    "#4F46E5",
+    "#16A34A",
+    "#F59E0B",
+    "#DC2626",
+    "#0EA5E9",
+    "#9333EA",
+    "#EC4899",
+    "#14B8A6"
+];
+
+const ctx = document.getElementById("categoryChart");
+
+if (categoryChart) {
+    categoryChart.destroy();
+}
+
+if (labels.length > 0) {
+
+    categoryChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+
+}
+
+const totalExpense = values.reduce((a,b)=>a+b,0);
+
+document.getElementById("catBreakdown").innerHTML =
+catEntries.map(([cat,val])=>`
+<div class="cat-row">
+    <span>${CAT_ICONS[cat]||"●"} ${cat}</span>
+    <span>
+        ${formatRupiah(val)}
+        (${((val/totalExpense)*100).toFixed(1)}%)
+    </span>
+</div>
+`).join("");
 }
 
 function renderTxList(list, withDelete) {
