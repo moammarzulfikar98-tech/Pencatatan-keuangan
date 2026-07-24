@@ -716,7 +716,7 @@ const { data: budgetData, error: budgetError } =
 await supabaseClient
 .from("budgets")
 .select("*")
-.order("month", {
+.order("created_at", {
     ascending: false
 });
 
@@ -793,10 +793,10 @@ async function saveBudget(){
     const { error } = await supabaseClient
         .from("budgets")
         .insert([{
-            name: name,
-            amount: amount,
-            month: month
-        }]);
+    category: name,
+    budget_limit: amount,
+    period: month
+}]);
 
     if(error){
         console.log(error);
@@ -1090,7 +1090,7 @@ function renderBudget(){
 
 }
 
-function budgetSpent(month){
+function budgetSpent(period){
 
     return transactions
 
@@ -1100,7 +1100,7 @@ function budgetSpent(month){
 
         &&
 
-        t.date.startsWith(month)
+        t.date.startsWith(period)
 
     )
 
@@ -1111,13 +1111,13 @@ function budgetSpent(month){
 function budgetCard(b){
   
   
-    const spent = budgetSpent(b.month);
+    const spent = budgetSpent(b.period);
 
-const percent = Math.min((spent / b.amount) * 100, 100);
+const percent = Math.min((spent / b.budget_limit) * 100, 100);
 
-const remain = Math.max(b.amount - spent, 0);
+const remain = Math.max(b.budget_limit - spent,0);
 
-const overBudget = spent > b.amount;
+const overBudget = spent > b.budget_limit;
 
     let color="#22c55e";
 
@@ -1145,13 +1145,13 @@ const overBudget = spent > b.amount;
 
 <div class="budget-title">
 
-${b.name}
+${b.category}
 
 </div>
 
 <div class="budget-sub">
 
-${b.month}
+${b.period}
 
 </div>
 
@@ -1161,7 +1161,7 @@ ${b.month}
 
 /
 
-${formatRupiah(b.amount)}
+${formatRupiah(b.budget_limit)}
 
 </div>
 
@@ -1189,7 +1189,7 @@ ${percent.toFixed(1)}%
 ${overBudget ? "Melebihi" : "Sisa"}
 
 <b>
-${formatRupiah(overBudget ? spent - b.amount : remain)}
+${formatRupiah(overBudget ? spent - b.budget_limit : remain)}
 </b>
 </div>
 
