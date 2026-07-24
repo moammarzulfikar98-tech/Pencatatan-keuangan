@@ -167,7 +167,7 @@
   .acc-name { 
     font-size: 10px; 
     color: var(--muted); 
-    ext-transform: uppercase; 
+    text-transform: uppercase; 
     letter-spacing: 0.3px; 
     margin-bottom: 2px; 
   }
@@ -557,6 +557,7 @@
     <button class="nav-add" onclick="openModal()">+</button>
     <button class="nav-btn" id="navInsight" onclick="goPage('insight')">
       <span class="nav-icon">◔</span>Insight
+    </button>
     <button class="nav-btn" id="navBudget"  onclick="goPage('budget')">
       <span class="nav-icon">🎯</span>Budget
 </button>
@@ -711,10 +712,13 @@ async function loadData() {
     console.log(transactions);
   console.log(budgets);
 
-  const { data: budgetData, error: budgetError } =
+const { data: budgetData, error: budgetError } =
 await supabaseClient
 .from("budgets")
-.select("*");
+.select("*")
+.order("month", {
+    ascending: false
+});
 
   console.log("Budget Data:", budgetData);
 console.log("Budget Error:", budgetError);
@@ -793,6 +797,24 @@ async function saveBudget(){
         return;
     }
 
+async function deleteBudget(id){
+
+    if(!confirm("Hapus Budget?")) return;
+
+    const { error } = await supabaseClient
+        .from("budgets")
+        .delete()
+        .eq("id", id);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    loadData();
+
+}
+  
     const { error } =
     await supabaseClient
     .from("budgets")
@@ -814,7 +836,9 @@ async function saveBudget(){
     }
 
     closeBudgetModal();
-
+document.getElementById("budgetName").value = "";
+document.getElementById("budgetAmount").value = "";
+document.getElementById("budgetMonth").value = "";
     await loadData();
 
 }
@@ -970,25 +994,34 @@ if (categoryChart instanceof Chart) {
 
 if (labels.length > 0) {
 
-    categoryChart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: labels,
-            datasets: [{
-                data: values,
-                backgroundColor: colors
+    categoryChart = new Chart(ctx,{
+        type:"doughnut",
+        data:{
+            labels:labels,
+            datasets:[{
+                data:values,
+                backgroundColor:colors
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: "bottom"
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{
+                    position:"bottom"
                 }
             }
         }
     });
 
+}else{
+
+    if(categoryChart){
+        categoryChart.destroy();
+        categoryChart = null;
+    }
+
+    document.getElementById("catBreakdown").innerHTML =
+        "<div class='empty'>Belum ada pengeluaran bulan ini.</div>";
 }
 
 const totalExpense = values.reduce((a,b)=>a+b,0);
@@ -1088,32 +1121,15 @@ function budgetSpent(month){
 }
 
 function budgetCard(b){
-  async function deleteBudget(id){
-
-    if(!confirm("Hapus Budget?")) return;
-
-    const { error } = await supabaseClient
-        .from("budgets")
-        .delete()
-        .eq("id", id);
-
-    if(error){
-        alert(error.message);
-        return;
-    }
-
-    loadData();
-
-}
   
-    const spent =
-        budgetSpent(b.month);
+  
+    const spent = budgetSpent(b.month);
 
-    const percent =
-        Math.min(spent/b.amount*100,100);
+const percent = Math.min((spent / b.amount) * 100, 100);
 
-    const remain =
-        b.amount-spent;
+const remain = Math.max(b.amount - spent, 0);
+
+const overBudget = spent > b.amount;
 
     let color="#22c55e";
 
@@ -1182,15 +1198,11 @@ ${percent.toFixed(1)}%
 </div>
 
 <div style="margin-top:8px">
-
-Sisa
+${overBudget ? "Melebihi" : "Sisa"}
 
 <b>
-
-${formatRupiah(remain)}
-
+${formatRupiah(overBudget ? spent - b.amount : remain)}
 </b>
-
 </div>
 
 <div style="margin-top:10px;color:${color};font-weight:bold">
