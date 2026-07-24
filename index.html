@@ -618,14 +618,18 @@
         <h2>Buat Budget Baru</h2>
 
         <div class="field-label">
-            Nama Budget
-        </div>
+    Kategori
+</div>
 
-        <input
-            type="text"
-            id="budgetName"
-            placeholder="Contoh: Budget Bulanan">
-
+<select id="budgetCategory">
+    <option value="Makanan">🍔 Makanan</option>
+    <option value="Transportasi">🚗 Transportasi</option>
+    <option value="Belanja">🛍 Belanja</option>
+    <option value="Tagihan">🧾 Tagihan</option>
+    <option value="Hiburan">🎬 Hiburan</option>
+    <option value="Investasi">📈 Investasi</option>
+    <option value="Lainnya">✳ Lainnya</option>
+</select>
         <div class="field-label">
             Jumlah Budget
         </div>
@@ -781,7 +785,7 @@ function closeBudgetModal() {
 
 async function saveBudget(){
 
-    const name = document.getElementById("budgetName").value.trim();
+    const category = document.getElementById("budgetCategory").value;
     const amount = Number(document.getElementById("budgetAmount").value);
     const month = document.getElementById("budgetMonth").value;
 
@@ -793,7 +797,7 @@ async function saveBudget(){
     const { error } = await supabaseClient
         .from("budgets")
         .insert([{
-    category: name,
+    category: category,
     budget_limit: amount,
     period: month
 }]);
