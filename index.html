@@ -203,6 +203,23 @@
     display: block;
     margin: 0 auto;
 }
+.budget-card{
+    background:white;
+    margin:16px 20px;
+    padding:18px;
+    border-radius:16px;
+    border:1px solid var(--border);
+}
+
+.budget-title{
+    font-size:16px;
+    font-weight:700;
+}
+
+.budget-sub{
+    color:var(--muted);
+    margin-top:6px;
+}
   
 </style>
 </head>
@@ -311,6 +328,13 @@
     <button class="nav-add" onclick="openModal()">+</button>
     <button class="nav-btn" id="navInsight" onclick="goPage('insight')">
       <span class="nav-icon">◔</span>Insight
+    <button class="nav-btn" id="navBudget"
+onclick="goPage('budget')">
+
+    <span class="nav-icon">🎯</span>
+    Budget
+
+</button>
     </button>
   </div>
 </div>
@@ -444,6 +468,10 @@ function goPage(name) {
   if (name === 'history') { 
     document.getElementById('navHistory2').classList.add('active'); }
   if (name === 'insight') document.getElementById('navInsight').classList.add('active');
+  if(name==="budget")
+    document
+        .getElementById("navBudget")
+        .classList.add("active");
   render();
 }
 
