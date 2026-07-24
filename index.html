@@ -775,9 +775,47 @@ function closeBudgetModal() {
 
 }
 
-function saveBudget(){
+async function saveBudget(){
 
-    alert("Modal Budget berhasil muncul!");
+    const name =
+        document.getElementById("budgetName").value.trim();
+
+    const amount =
+        Number(document.getElementById("budgetAmount").value);
+
+    const month =
+        document.getElementById("budgetMonth").value;
+
+    if(!name || !amount || !month){
+
+        alert("Lengkapi semua data.");
+
+        return;
+    }
+
+    const { error } =
+    await supabaseClient
+    .from("budgets")
+    .insert([{
+
+        name:name,
+        amount:amount,
+        month:month
+
+    }]);
+
+    if(error){
+
+        console.log(error);
+
+        alert(error.message);
+
+        return;
+    }
+
+    closeBudgetModal();
+
+    await loadData();
 
 }
   
@@ -965,6 +1003,8 @@ catEntries.map(([cat,val])=>`
     </span>
 </div>
 `).join("");
+
+renderBudget();
 }
 
 function renderTxList(list, withDelete) {
@@ -990,6 +1030,193 @@ function renderTxList(list, withDelete) {
   }).join('');
 }
 
+function renderBudget(){
+
+    const wrap =
+        document.getElementById("budgetList");
+
+    if(budgets.length===0){
+
+        wrap.innerHTML=`
+        <div class="budget-empty">
+
+            <div class="budget-empty-icon">
+            🎯
+            </div>
+
+            <h3>Belum ada Budget</h3>
+
+            <p>
+            Tambahkan budget agar Arta membantu mengontrol pengeluaranmu.
+            </p>
+
+            <button
+            class="budget-add-btn"
+            onclick="openBudgetModal()">
+
+            + Tambah Budget
+
+            </button>
+
+        </div>`;
+
+        return;
+
+    }
+
+    wrap.innerHTML =
+    budgets.map(b=>budgetCard(b)).join("");
+
+}
+
+function budgetSpent(month){
+
+    return transactions
+
+    .filter(t=>
+
+        t.type==="expense"
+
+        &&
+
+        t.date.startsWith(month)
+
+    )
+
+    .reduce((a,b)=>a+b.amount,0);
+
+}
+
+function budgetCard(b){
+  async function deleteBudget(id){
+
+    if(!confirm("Hapus Budget?")) return;
+
+    const { error } = await supabaseClient
+        .from("budgets")
+        .delete()
+        .eq("id", id);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    loadData();
+
+}
+  
+    const spent =
+        budgetSpent(b.month);
+
+    const percent =
+        Math.min(spent/b.amount*100,100);
+
+    const remain =
+        b.amount-spent;
+
+    let color="#22c55e";
+
+    let status="Aman";
+
+    if(percent>=80){
+
+        color="#f59e0b";
+
+        status="Hampir Habis";
+
+    }
+
+    if(percent>=100){
+
+        color="#ef4444";
+
+        status="Melebihi Budget";
+
+    }
+
+    return`
+
+<div class="budget-card">
+
+<div class="budget-title">
+
+${b.name}
+
+</div>
+
+<div class="budget-sub">
+
+${b.month}
+
+</div>
+
+<div style="margin-top:18px">
+
+<b>${formatRupiah(spent)}</b>
+
+/
+
+${formatRupiah(b.amount)}
+
+</div>
+
+<div style="background:#eee;height:10px;border-radius:10px;margin-top:12px">
+
+<div style="height:10px;
+
+width:${percent}%;
+
+background:${color};
+
+border-radius:10px">
+
+</div>
+
+</div>
+
+<div style="margin-top:12px">
+
+${percent.toFixed(1)}%
+
+</div>
+
+<div style="margin-top:8px">
+
+Sisa
+
+<b>
+
+${formatRupiah(remain)}
+
+</b>
+
+</div>
+
+<div style="margin-top:10px;color:${color};font-weight:bold">
+${status}
+</div>
+
+<div style="margin-top:15px;display:flex;justify-content:flex-end">
+    <button
+        onclick="deleteBudget(${b.id})"
+        style="
+        border:none;
+        background:#ef4444;
+        color:white;
+        padding:8px 12px;
+        border-radius:8px;
+        cursor:pointer;">
+        🗑 Hapus
+    </button>
+</div>
+
+</div>
+`;
+
+}
+  
+  
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
@@ -1101,6 +1328,7 @@ window.closeModal = closeModal;
 window.openBudgetModal = openBudgetModal;
 window.closeBudgetModal = closeBudgetModal;
 window.saveBudget = saveBudget;
+window.deleteBudget = deleteBudget;
 
 loadData();
 </script>
