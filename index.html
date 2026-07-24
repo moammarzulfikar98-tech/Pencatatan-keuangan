@@ -196,6 +196,14 @@
 
   .filters { display: flex; gap: 8px; padding: 0 20px 12px; }
   .filters select { flex: 1; font-size: 12px; padding: 8px 10px; }
+
+  #categoryChart {
+    width: 100%;
+    max-height: 280px;
+    display: block;
+    margin: 0 auto;
+}
+  
 </style>
 </head>
 <body>
@@ -337,6 +345,7 @@
 <script>
 let transactions = [];
 let currentType = 'income';
+let categoryChart = null;
 
 const supabaseClient = window.supabase.createClient(
     "https://tcmngkjrgkmtvdnyydqc.supabase.co",
@@ -522,7 +531,7 @@ const colors = [
 
 const ctx = document.getElementById("categoryChart");
 
-if (categoryChart) {
+if (categoryChart !== null) {
     categoryChart.destroy();
 }
 
