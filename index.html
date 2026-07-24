@@ -609,7 +609,56 @@ onclick="goPage('budget')">
     </form>
   </div>
 </div>
-  
+
+<div class="modal-overlay" id="budgetModal">
+
+    <div class="modal">
+
+        <button class="close-modal"
+                onclick="closeBudgetModal()">✕</button>
+
+        <div class="modal-handle"></div>
+
+        <h2>Buat Budget Baru</h2>
+
+        <div class="field-label">
+            Nama Budget
+        </div>
+
+        <input
+            type="text"
+            id="budgetName"
+            placeholder="Contoh: Budget Bulanan">
+
+        <div class="field-label">
+            Jumlah Budget
+        </div>
+
+        <input
+            type="number"
+            id="budgetAmount"
+            placeholder="5000000">
+
+        <div class="field-label">
+            Bulan
+        </div>
+
+        <input
+            type="month"
+            id="budgetMonth">
+
+        <button
+            class="submit"
+            onclick="saveBudget()">
+
+            Simpan Budget
+
+        </button>
+
+    </div>
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -713,6 +762,30 @@ function openModal() {
   document.getElementById('modalOverlay').classList.add('active');
 }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+function openBudgetModal() {
+
+    document.getElementById("budgetModal")
+        .classList.add("active");
+
+    document.getElementById("budgetMonth").value =
+        new Date().toISOString().slice(0,7);
+
+}
+
+function closeBudgetModal() {
+
+    document.getElementById("budgetModal")
+        .classList.remove("active");
+
+}
+
+function saveBudget(){
+
+    alert("Modal Budget berhasil muncul!");
+
+}
+  
 function setType(type) {
   currentType = type;
   document.getElementById('btnIncome').classList.toggle('active-income', type === 'income');
@@ -1011,6 +1084,17 @@ document.addEventListener('input', (e) => {
 
 document.getElementById('modalOverlay').addEventListener('click', (e) => {
   if (e.target.id === 'modalOverlay') closeModal();
+});
+
+document.getElementById("budgetModal")
+.addEventListener("click", function(e){
+
+    if(e.target.id==="budgetModal"){
+
+        closeBudgetModal();
+
+    }
+
 });
 
 document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
