@@ -507,10 +507,21 @@ function render() {
 
   const catTotals = {};
 
+const now = new Date();
+
 transactions
-.filter(t => t.type === "expense")
+.filter(t => {
+    const d = new Date(t.date);
+
+    return (
+        t.type === "expense" &&
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+    );
+})
 .forEach(t => {
-    catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+    catTotals[t.category] =
+        (catTotals[t.category] || 0) + t.amount;
 });
 
 const catEntries = Object.entries(catTotals);
