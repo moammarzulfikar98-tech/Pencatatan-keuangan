@@ -509,7 +509,7 @@ const monthExpense = transactions
   if (catSel && catSel.options.length <= 1) {
     Object.keys(CAT_ICONS).forEach(cat => catSel.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`));
   }
-
+  
   let list = [...transactions];
   if (filterType !== 'all') list = list.filter(t => t.type === filterType);
   if (filterAccount !== 'all') list = list.filter(t => t.account === filterAccount);
