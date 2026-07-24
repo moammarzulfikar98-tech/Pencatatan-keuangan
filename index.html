@@ -830,33 +830,6 @@ async function deleteBudget(id){
     await loadData();
 }
   
-    const { error } =
-    await supabaseClient
-    .from("budgets")
-    .insert([{
-
-        name:name,
-        amount:amount,
-        month:month
-
-    }]);
-
-    if(error){
-
-        console.log(error);
-
-        alert(error.message);
-
-        return;
-    }
-
-    closeBudgetModal();
-document.getElementById("budgetName").value = "";
-document.getElementById("budgetAmount").value = "";
-document.getElementById("budgetMonth").value = "";
-    await loadData();
-
-}
   
 function setType(type) {
   currentType = type;
