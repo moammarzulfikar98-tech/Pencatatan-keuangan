@@ -341,6 +341,7 @@
 
 <script>
 let transactions = [];
+let budgets = [];
 let currentType = 'income';
 let categoryChart = null;
 
@@ -389,7 +390,18 @@ async function loadData() {
     }));
 
     console.log(transactions);
+  console.log(budgets);
 
+  const { data: budgetData, error: budgetError } =
+await supabaseClient
+.from("budgets")
+.select("*");
+
+if (budgetError) {
+    console.error(budgetError);
+} else {
+    budgets = budgetData;
+}
     render();
 }
 
