@@ -781,22 +781,38 @@ function closeBudgetModal() {
 
 async function saveBudget(){
 
-    const name =
-        document.getElementById("budgetName").value.trim();
-
-    const amount =
-        Number(document.getElementById("budgetAmount").value);
-
-    const month =
-        document.getElementById("budgetMonth").value;
+    const name = document.getElementById("budgetName").value.trim();
+    const amount = Number(document.getElementById("budgetAmount").value);
+    const month = document.getElementById("budgetMonth").value;
 
     if(!name || !amount || !month){
-
         alert("Lengkapi semua data.");
-
         return;
     }
+
+    const { error } = await supabaseClient
+        .from("budgets")
+        .insert([{
+            name: name,
+            amount: amount,
+            month: month
+        }]);
+
+    if(error){
+        console.log(error);
+        alert(error.message);
+        return;
+    }
+
+    closeBudgetModal();
+
+    document.getElementById("budgetName").value = "";
+    document.getElementById("budgetAmount").value = "";
+    document.getElementById("budgetMonth").value = "";
+
+    await loadData();
 }
+  
 async function deleteBudget(id){
 
     if(!confirm("Hapus Budget?")) return;
@@ -811,8 +827,7 @@ async function deleteBudget(id){
         return;
     }
 
-    loadData();
-
+    await loadData();
 }
   
     const { error } =
