@@ -529,9 +529,12 @@ const colors = [
     "#14B8A6"
 ];
 
-const ctx = document.getElementById("categoryChart");
-
-if (categoryChart !== null) {
+const ctx = document.getElementById("categoryChart").getContext("2d");
+  
+console.log(categoryChart);
+console.log(typeof categoryChart);
+  
+if (categoryChart instanceof Chart) {
     categoryChart.destroy();
 }
 
