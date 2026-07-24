@@ -453,8 +453,24 @@ function accountBalance(acc) {
 function render() {
   console.log("Transactions:", transactions);
   
-  let income = 0, expense = 0;
-  transactions.forEach(t => { if (t.type === 'income') income += t.amount; else expense += t.amount; });
+  const now = new Date();
+
+let income = 0;
+let expense = 0;
+
+transactions.forEach(t => {
+    const d = new Date(t.date);
+
+    if (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+    ) {
+        if (t.type === "income")
+            income += t.amount;
+        else
+            expense += t.amount;
+    }
+});
   const totalSaldo = income - expense;
 
   document.getElementById('netWorthVal').textContent = formatRupiah(totalSaldo);
