@@ -471,7 +471,13 @@ transactions.forEach(t => {
             expense += t.amount;
     }
 });
-  const totalSaldo = income - expense;
+  let totalSaldo = 0;
+
+transactions.forEach(t => {
+    totalSaldo += t.type === "income"
+        ? t.amount
+        : -t.amount;
+});
 
   document.getElementById('netWorthVal').textContent = formatRupiah(totalSaldo);
   document.getElementById('totalSaldoVal').textContent = formatRupiah(totalSaldo);
@@ -522,7 +528,7 @@ const monthExpense = transactions
 
   const catTotals = {};
 
-const monthExpense = transactions
+transactions
 .filter(t => {
     const d = new Date(t.date);
 
