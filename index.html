@@ -399,6 +399,8 @@ await supabaseClient
 
   console.log("Budget Data:", budgetData);
 console.log("Budget Error:", budgetError);
+
+  budgets = budgetData || [];
   
 if (budgetError) {
     console.error(budgetError);
