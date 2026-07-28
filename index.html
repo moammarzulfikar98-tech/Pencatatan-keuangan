@@ -886,21 +886,17 @@ function closeBudgetModal() {
 
 }
 
-function openTransfer(){
-
-    closeQuickAction();
+function openTransfer() {
 
     document
         .getElementById("transferModal")
         .classList.add("active");
 
-    document
-        .getElementById("transferDate").value =
+    document.getElementById("transferDate").value =
         new Date().toISOString().split("T")[0];
-
 }
 
-function closeTransfer(){
+function closeTransfer() {
 
     document
         .getElementById("transferModal")
@@ -1472,8 +1468,17 @@ window.newExpense = newExpense;
 window.openBudgetFromQuick = openBudgetFromQuick;
 
 window.openTransfer = openTransfer;
-window.closeTransfer = closeTransfer; 
+window.closeTransfer = closeTransfer;
+window.saveTransfer = saveTransfer;
 
+async function saveTransfer(){
+
+    alert("Transfer berhasil.");
+
+    closeTransfer();
+
+}
+  
 function openQuickAction(){
 
     document
