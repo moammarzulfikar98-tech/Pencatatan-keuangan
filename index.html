@@ -543,7 +543,7 @@
         </div>
 
     </div>
-
+</div>
 <div class="page" id="page-goals">
 
     <div class="header">
@@ -584,6 +584,12 @@
     </button>
     <button class="nav-btn" id="navBudget"  onclick="goPage('budget')">
       <span class="nav-icon">🎯</span>Budget
+</button>
+    <button class="nav-btn"
+        id="navGoals"
+        onclick="goPage('goals')">
+
+    <span class="nav-icon">🏦</span>Goals
 </button>
   </div>
 </div>
@@ -923,10 +929,12 @@ function goPage(name) {
   if (name === 'history') { 
     document.getElementById('navHistory2').classList.add('active'); }
   if (name === 'insight') document.getElementById('navInsight').classList.add('active');
-  if(name==="budget")
+  if(name==="budget")  document.getElementById("navBudget").classList.add("active");
+  if(name==="goals"){
     document
-        .getElementById("navBudget")
+        .getElementById("navGoals")
         .classList.add("active");
+}
   render();
 }
 
@@ -1573,6 +1581,7 @@ window.openBudgetFromQuick = openBudgetFromQuick;
 window.openTransfer = openTransfer;
 window.closeTransfer = closeTransfer;
 window.saveTransfer = saveTransfer;
+  window.saveGoal = saveGoal;
 
 async function saveTransfer(){
 
@@ -1633,6 +1642,43 @@ async function saveTransfer(){
 
     await loadData();
 
+}
+
+async function saveGoal(){
+
+    const name = document.getElementById("goalName").value.trim();
+    const target = Number(document.getElementById("goalTarget").value);
+    const account = document.getElementById("goalAccount").value;
+    const date = document.getElementById("goalDate").value;
+
+    if(!name || !target || !date){
+        alert("Lengkapi semua data.");
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("goals")
+        .insert([{
+            goal_name: name,
+            target_amount: target,
+            saved_amount: 0,
+            account: account,
+            target_date: date
+        }]);
+
+    if(error){
+        console.error(error);
+        alert(error.message);
+        return;
+    }
+
+    closeGoalModal();
+
+    document.getElementById("goalName").value = "";
+    document.getElementById("goalTarget").value = "";
+    document.getElementById("goalDate").value = "";
+
+    await loadData();
 }
   
 function openQuickAction(){
