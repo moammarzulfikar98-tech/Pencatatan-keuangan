@@ -1263,6 +1263,7 @@ catEntries.map(([cat,val])=>`
 `).join("");
 
 renderBudget();
+renderGoal();
 }
 
 function renderTxList(list, withDelete) {
@@ -1327,6 +1328,95 @@ function renderBudget(){
 
 }
 
+function renderGoal(){
+
+    const wrap = document.getElementById("goalList");
+
+    if(goals.length===0){
+
+        wrap.innerHTML=`
+        <div class="budget-empty">
+
+            <div class="budget-empty-icon">🏦</div>
+
+            <h3>Belum ada Goal</h3>
+
+            <p>
+                Buat target tabungan pertamamu.
+            </p>
+
+        </div>
+        `;
+
+        return;
+    }
+
+    wrap.innerHTML =
+        goals.map(g=>goalCard(g)).join("");
+
+}
+
+function goalCard(g){
+
+    const percent =
+        Math.min(
+            (g.saved_amount / g.target_amount) * 100,
+            100
+        );
+
+    const remain =
+        g.target_amount - g.saved_amount;
+
+    return `
+    <div class="budget-card">
+
+        <div class="budget-title">
+            ${g.goal_name}
+        </div>
+
+        <div class="budget-sub">
+            Target ${g.target_date}
+        </div>
+
+        <div style="margin-top:18px">
+
+            <b>${formatRupiah(g.saved_amount)}</b>
+
+            /
+
+            ${formatRupiah(g.target_amount)}
+
+        </div>
+
+        <div style="background:#eee;height:10px;border-radius:10px;margin-top:12px">
+
+            <div style="
+                width:${percent}%;
+                height:10px;
+                background:#2451c4;
+                border-radius:10px">
+            </div>
+
+        </div>
+
+        <div style="margin-top:10px">
+
+            ${percent.toFixed(1)}%
+
+        </div>
+
+        <div style="margin-top:8px">
+
+            Sisa
+
+            <b>${formatRupiah(remain)}</b>
+
+        </div>
+
+    </div>
+    `;
+}
+  
 function budgetSpent(period){
 
     return transactions
