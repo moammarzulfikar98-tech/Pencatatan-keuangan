@@ -104,19 +104,19 @@
 </div>
 </div>
 </div>
-<div class="page" id="page-goals">
+<div class="page" id="page-s">
 <div class="header">
 <div>
-<h1>Goals</h1>
+<h1>s</h1>
 <div class="greet">
                 Target tabungan
             </div>
 </div>
-<button class="power-btn" onclick="openGoalModal()">
+<button class="power-btn" onclick="openModal()">
             +
         </button>
 </div>
-<div id="goalList"></div>
+<div id="List"></div>
 </div>
 </div>
 <div class="bottom-nav">
@@ -135,8 +135,8 @@
 <button class="nav-btn" id="navBudget" onclick="goPage('budget')">
 <span class="nav-icon">🎯</span>Budget
 </button>
-<button class="nav-btn" id="navGoals" onclick="goPage('goals')">
-<span class="nav-icon">🏦</span>Goals
+<button class="nav-btn" id="navs" onclick="goPage('s')">
+<span class="nav-icon">🏦</span>s
 </button>
 </div>
 
@@ -195,7 +195,7 @@
 <button class="submit" onclick="openTransfer()">
             🔄 Transfer
         </button>
-<button class="submit" onclick="openGoalModal()">
+<button class="submit" onclick="openModal()">
     🏦 Menabung
 </button>
 <button class="submit" onclick="openBudgetFromQuick()">
@@ -262,17 +262,17 @@
         </button>
 </div>
 </div>
-<div class="modal-overlay" id="goalModal">
+<div class="modal-overlay" id="Modal">
 <div class="modal">
-<button class="close-modal" onclick="closeGoalModal()">✕</button>
+<button class="close-modal" onclick="closeModal()">✕</button>
 <div class="modal-handle"></div>
-<h2>Buat Goal Baru</h2>
-<div class="field-label">Nama Goal</div>
-<input id="goalName" placeholder="Contoh: Beli Laptop" type="text"/>
+<h2>Buat  Baru</h2>
+<div class="field-label">Nama </div>
+<input id="Name" placeholder="Contoh: Beli Laptop" type="text"/>
 <div class="field-label">Target Tabungan</div>
-<input id="goalTarget" placeholder="10000000" type="number"/>
+<input id="Target" placeholder="10000000" type="number"/>
 <div class="field-label">Akun</div>
-<select id="goalAccount">
+<select id="Account">
 <option value="Tunai">Tunai</option>
 <option value="BCA">BCA</option>
 <option value="SeaBank">SeaBank</option>
@@ -280,9 +280,9 @@
 <option value="E-Wallet">E-Wallet</option>
 </select>
 <div class="field-label">Target Tanggal</div>
-<input id="goalDate" type="date"/>
-<button class="submit" onclick="saveGoal()">
-            Simpan Goal
+<input id="Date" type="date"/>
+<button class="submit" onclick="save()">
+            Simpan 
         </button>
 </div>
 </div>
