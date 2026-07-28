@@ -526,7 +526,7 @@ function goalCard(g){
     <div class="budget-card">
 
         <div class="budget-title">
-            ${g.goal_name}
+            ${g.name}
         </div>
 
         <div class="budget-sub">
@@ -916,7 +916,7 @@ async function saveGoal(){
     const { error } = await supabaseClient
         .from("goals")
         .insert([{
-            goal_name: name,
+            name: name,
             target_amount: target,
             saved_amount: 0,
             account: account,
