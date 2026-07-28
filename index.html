@@ -910,7 +910,7 @@ async function saveBudget(){
     const amount = Number(document.getElementById("budgetAmount").value);
     const month = document.getElementById("budgetMonth").value;
 
-    if(!name || !amount || !month){
+    if(!category || !amount || !month){
         alert("Lengkapi semua data.");
         return;
     }
@@ -931,7 +931,7 @@ async function saveBudget(){
 
     closeBudgetModal();
 
-    document.getElementById("budgetName").value = "";
+    document.getElementById("budgetCategory").value = "";
     document.getElementById("budgetAmount").value = "";
     document.getElementById("budgetMonth").value = "";
 
@@ -1473,9 +1473,63 @@ window.saveTransfer = saveTransfer;
 
 async function saveTransfer(){
 
-    alert("Transfer berhasil.");
+    const from = document.getElementById("transferFrom").value;
+    const to = document.getElementById("transferTo").value;
+    const amount = Number(document.getElementById("transferAmount").value);
+    const date = document.getElementById("transferDate").value;
+
+    if(!from || !to || !amount || !date){
+        alert("Lengkapi semua data.");
+        return;
+    }
+
+    if(from === to){
+        alert("Akun asal dan tujuan tidak boleh sama.");
+        return;
+    }
+
+    if(amount <= 0){
+        alert("Jumlah transfer tidak valid.");
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("transactions")
+        .insert([
+
+            {
+                type: "expense",
+                description: `Transfer ke ${to}`,
+                amount: amount,
+                account: from,
+                category: "Transfer",
+                transaction_date: date
+            },
+
+            {
+                type: "income",
+                description: `Transfer dari ${from}`,
+                amount: amount,
+                account: to,
+                category: "Transfer",
+                transaction_date: date
+            }
+
+        ]);
+
+    if(error){
+        console.error(error);
+        alert(error.message);
+        return;
+    }
+
+    alert("Transfer berhasil!");
 
     closeTransfer();
+
+    document.getElementById("transferAmount").value = "";
+
+    await loadData();
 
 }
   
