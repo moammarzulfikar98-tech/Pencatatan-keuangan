@@ -630,7 +630,7 @@
         </button>
 
         <button class="submit"
-            onclick="alert('Transfer segera hadir')">
+            onclick="openTransfer()">
             🔄 Transfer
         </button>
 
@@ -653,6 +653,62 @@
 
 </div>
 
+<div class="modal-overlay" id="transferModal">
+
+    <div class="modal">
+
+        <button class="close-modal"
+            onclick="closeTransfer()">✕</button>
+
+        <div class="modal-handle"></div>
+
+        <h2>Transfer Antar Akun</h2>
+
+        <div class="field-label">Dari</div>
+
+        <select id="transferFrom">
+            <option>Tunai</option>
+            <option>BCA</option>
+            <option>SeaBank</option>
+            <option>Bibit</option>
+            <option>E-Wallet</option>
+        </select>
+
+        <div class="field-label">Ke</div>
+
+        <select id="transferTo">
+            <option>Tunai</option>
+            <option>BCA</option>
+            <option>SeaBank</option>
+            <option>Bibit</option>
+            <option>E-Wallet</option>
+        </select>
+
+        <div class="field-label">Jumlah</div>
+
+        <input
+            type="number"
+            id="transferAmount"
+            placeholder="0">
+
+        <div class="field-label">Tanggal</div>
+
+        <input
+            type="date"
+            id="transferDate">
+
+        <button
+            class="submit"
+            onclick="saveTransfer()">
+
+            Transfer
+
+        </button>
+
+    </div>
+
+</div>
+  
 <div class="modal-overlay" id="budgetModal">
 
     <div class="modal">
@@ -830,6 +886,28 @@ function closeBudgetModal() {
 
 }
 
+function openTransfer(){
+
+    closeQuickAction();
+
+    document
+        .getElementById("transferModal")
+        .classList.add("active");
+
+    document
+        .getElementById("transferDate").value =
+        new Date().toISOString().split("T")[0];
+
+}
+
+function closeTransfer(){
+
+    document
+        .getElementById("transferModal")
+        .classList.remove("active");
+
+}
+  
 async function saveBudget(){
 
     const category = document.getElementById("budgetCategory").value;
@@ -1370,17 +1448,31 @@ document.getElementById("budgetModal")
 
 });
 
+document.getElementById("transferModal")
+.addEventListener("click", function(e){
+
+    if(e.target.id==="transferModal"){
+
+        closeTransfer();
+
+    }
+
+});
+  
 document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
   
 window.goPage = goPage;
 window.openModal = openModal;
 window.closeModal = closeModal;
 
-window.openQuickAction = openQuickAction;
+.openQuickAction = openQuickAction;
 window.closeQuickAction = closeQuickAction;
 window.newIncome = newIncome;
 window.newExpense = newExpense;
 window.openBudgetFromQuick = openBudgetFromQuick;
+
+window.openTransfer = openTransfer;
+window.closeTransfer = closeTransfer; 
 
 function openQuickAction(){
 
