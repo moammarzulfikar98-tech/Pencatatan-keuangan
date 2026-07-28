@@ -554,7 +554,9 @@
     <button class="nav-btn" id="navHistory2" onclick="goPage('history')">
       <span class="nav-icon">▤</span>Transaction
     </button>
-    <button class="nav-add" onclick="openModal()">+</button>
+    <button class="nav-add" onclick="openQuickAction()">
+    +
+</button>
     <button class="nav-btn" id="navInsight" onclick="goPage('insight')">
       <span class="nav-icon">◔</span>Insight
     </button>
@@ -604,6 +606,51 @@
       <button type="submit" class="submit">Simpan transaksi</button>
     </form>
   </div>
+</div>
+
+<div class="modal-overlay" id="quickActionModal">
+
+    <div class="modal">
+
+        <button class="close-modal"
+            onclick="closeQuickAction()">✕</button>
+
+        <div class="modal-handle"></div>
+
+        <h2>Quick Action</h2>
+
+        <button class="submit"
+            onclick="newIncome()">
+            💰 Tambah Pemasukan
+        </button>
+
+        <button class="submit"
+            onclick="newExpense()">
+            💸 Tambah Pengeluaran
+        </button>
+
+        <button class="submit"
+            onclick="alert('Transfer segera hadir')">
+            🔄 Transfer
+        </button>
+
+        <button class="submit"
+            onclick="alert('Goals segera hadir')">
+            🏦 Menabung
+        </button>
+
+        <button class="submit"
+            onclick="openBudgetFromQuick()">
+            🎯 Budget Baru
+        </button>
+
+        <button class="submit"
+            onclick="alert('Tambah akun segera hadir')">
+            🏛 Tambah Akun
+        </button>
+
+    </div>
+
 </div>
 
 <div class="modal-overlay" id="budgetModal">
@@ -1329,10 +1376,67 @@ window.goPage = goPage;
 window.openModal = openModal;
 window.closeModal = closeModal;
 
-window.openBudgetModal = openBudgetModal;
-window.closeBudgetModal = closeBudgetModal;
-window.saveBudget = saveBudget;
-window.deleteBudget = deleteBudget;
+window.openQuickAction = openQuickAction;
+window.closeQuickAction = closeQuickAction;
+window.newIncome = newIncome;
+window.newExpense = newExpense;
+window.openBudgetFromQuick = openBudgetFromQuick;
+
+function openQuickAction(){
+
+    document
+        .getElementById("quickActionModal")
+        .classList.add("active");
+
+}
+
+function closeQuickAction(){
+
+    document
+        .getElementById("quickActionModal")
+        .classList.remove("active");
+
+}
+
+function newIncome(){
+
+    closeQuickAction();
+
+    openModal();
+
+    setType("income");
+
+}
+
+function newExpense(){
+
+    closeQuickAction();
+
+    openModal();
+
+    setType("expense");
+
+}
+
+function openBudgetFromQuick(){
+
+    closeQuickAction();
+
+    openBudgetModal();
+
+}
+
+document
+.getElementById("quickActionModal")
+.addEventListener("click",function(e){
+
+    if(e.target.id==="quickActionModal"){
+
+        closeQuickAction();
+
+    }
+
+});
 
 loadData();
 </script>
