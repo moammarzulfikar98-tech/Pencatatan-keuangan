@@ -657,9 +657,9 @@
         </button>
 
         <button class="submit"
-            onclick="alert('Goals segera hadir')">
-            🏦 Menabung
-        </button>
+    onclick="openGoalModal()">
+    🏦 Menabung
+</button>
 
         <button class="submit"
             onclick="openBudgetFromQuick()">
@@ -746,6 +746,55 @@
     Kategori
 </div>
 
+<div class="modal-overlay" id="goalModal">
+
+    <div class="modal">
+
+        <button class="close-modal"
+            onclick="closeGoalModal()">✕</button>
+
+        <div class="modal-handle"></div>
+
+        <h2>Buat Goal Baru</h2>
+
+        <div class="field-label">Nama Goal</div>
+        <input
+            type="text"
+            id="goalName"
+            placeholder="Contoh: iPhone 17 Pro">
+
+        <div class="field-label">Target Tabungan</div>
+        <input
+            type="number"
+            id="goalTarget"
+            placeholder="25000000">
+
+        <div class="field-label">Akun Menabung</div>
+        <select id="goalAccount">
+            <option>Tunai</option>
+            <option>BCA</option>
+            <option>SeaBank</option>
+            <option>Bibit</option>
+            <option>E-Wallet</option>
+        </select>
+
+        <div class="field-label">Target Tanggal</div>
+        <input
+            type="date"
+            id="goalDate">
+
+        <button
+            class="submit"
+            onclick="saveGoal()">
+
+            Simpan Goal
+
+        </button>
+
+    </div>
+
+</div>
+      
 <select id="budgetCategory">
     <option value="Makanan">🍔 Makanan</option>
     <option value="Transportasi">🚗 Transportasi</option>
@@ -922,6 +971,27 @@ function closeTransfer() {
 
     document
         .getElementById("transferModal")
+        .classList.remove("active");
+
+}
+
+function openGoalModal(){
+
+    closeQuickAction();
+
+    document
+        .getElementById("goalModal")
+        .classList.add("active");
+
+    document.getElementById("goalDate").value =
+        new Date().toISOString().split("T")[0];
+
+}
+
+function closeGoalModal(){
+
+    document
+        .getElementById("goalModal")
         .classList.remove("active");
 
 }
@@ -1476,7 +1546,18 @@ document.getElementById("transferModal")
     }
 
 });
-  
+
+document.getElementById("goalModal")
+.addEventListener("click", function(e){
+
+    if(e.target.id==="goalModal"){
+
+        closeGoalModal();
+
+    }
+
+});
+
 document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
   
 window.goPage = goPage;
