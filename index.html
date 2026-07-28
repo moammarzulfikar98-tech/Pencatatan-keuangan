@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catatan Keuangan</title>
+<link href="css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="wrap" id="authScreen" style="display:flex;">
+<div class="header">
+<div>
+<h1>Catatan Keuangan</h1>
+<div class="greet" id="authSubtitle">Masuk ke akunmu</div>
+</div>
+</div>
+
+<div class="insight-card" style="margin-top:40px;">
+<div class="field-label">Email</div>
+<input id="authEmail" placeholder="email@contoh.com" type="email"/>
+<div class="field-label">Password</div>
+<input id="authPassword" placeholder="Minimal 6 karakter" type="password"/>
+
+<div id="authError" style="color:var(--expense);font-size:12px;margin-top:10px;"></div>
+
+<button class="submit" id="authSubmitBtn" onclick="authSubmit()" style="margin-top:16px;">
+    Masuk
+</button>
+
+<div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted);">
+    <span id="authToggleText">Belum punya akun?</span>
+    <a href="#" onclick="toggleAuthMode();return false;" id="authToggleLink" style="color:var(--accent);font-weight:600;text-decoration:none;">Daftar</a>
+</div>
+</div>
+</div>
+
+<div class="wrap" id="appScreen" style="display:none;">
+<div class="page active" id="page-home">
+<div class="header">
+<div>
+<h1>Home</h1>
+<div class="greet"><span class="dot"></span> Halo, <span id="userGreetName">Ammar</span></div>
+</div>
+<button class="power-btn" title="Keluar" onclick="authSignOut()">⏻</button>
+</div>
+<div class="net-card">
+<div class="top-row">
+<div class="net-label">Kekayaan bersih</div>
+<button class="sync-badge" onclick="render()">↻ Tersinkron</button>
+</div>
+<div class="net-amount" id="netWorthVal">Rp0</div>
+<div class="net-sub-row">
+<div class="net-sub" onclick="goPage('history')">
+<div class="l">Total saldo</div>
+<div class="v" id="totalSaldoVal">Rp0</div>
+</div>
+<div class="net-sub" onclick="goPage('insight')">
+<div class="l">Pengeluaran bulan ini</div>
+<div class="v" id="monthExpenseVal">Rp0</div>
+</div>
+</div>
+</div>
+<div class="section-title">Saldo akun</div>
+<div class="acc-grid" id="accGrid"></div>
+<div class="section-title">Transaksi terbaru</div>
+<div class="tx-list" id="txListHome"></div>
+</div>
+<div class="page" id="page-history">
+<div class="header">
+<div>
+<h1>Transaction</h1>
+<div class="greet">Semua transaksi</div>
+</div>
+</div>
+<div class="filters" style="padding-bottom:8px;">
+<input id="searchInput" placeholder="Cari keterangan..." type="text"/>
+</div>
+<div class="filters">
+<select id="filterType"><option value="all">Semua jenis</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select>
+<select id="sortOrder"><option value="newest">Terbaru</option><option value="oldest">Terlama</option><option value="highest">Jumlah tertinggi</option></select>
+</div>
+<div class="filters">
+<select id="filterAccount"><option value="all">Semua akun</option></select>
+<select id="filterCategory"><option value="all">Semua kategori</option></select>
+</div>
+<div class="tx-list" id="txListFull"></div>
+</div>
+<div class="page" id="page-insight">
+<div class="header">
+<div><h1>Wawasan</h1><div class="greet">Ringkasan keuangan Anda</div></div>
+</div>
+<div class="insight-card">
+<div class="it">Ringkasan</div>
+<div class="cat-row"><span>Pemasukan</span><span id="insIncome" style="color:var(--income);font-weight:700">Rp0</span></div>
+<div class="cat-row"><span>Pengeluaran</span><span id="insExpense" style="color:var(--expense);font-weight:700">Rp0</span></div>
+</div>
+<div class="insight-card">
+<div class="it">Pengeluaran per kategori</div>
+<canvas id="categoryChart"></canvas>
+<div id="catBreakdown" style="margin-top:20px;"></div>
+</div> <!-- insight-card -->
+</div> <!-- page-insight -->
+<div class="page" id="page-budget">
+<div class="header">
+<div>
+<h1>Budget</h1>
+<div class="greet">
+                Atur batas pengeluaran bulanan
+            </div>
+</div>
+<button class="power-btn" onclick="openBudgetModal()">
+            +
+        </button>
+</div>
+<div id="budgetList">
+<div class="budget-empty">
+<div class="budget-empty-icon">
+                🎯
+            </div>
+<h3>Belum ada Budget</h3>
+<p>
+                Tambahkan budget agar Arta membantu
+                mengontrol pengeluaranmu.
+            </p>
+<button class="budget-add-btn" onclick="openBudgetModal()">
+
+                + Tambah Budget
+
+            </button>
+</div>
+</div>
+</div>
+
+<div class="page" id="page-goals">
+    <div class="header">
+        <div>
+            <h1>Goals</h1>
+            <div class="greet">Target tabungan</div>
+        </div>
+
+        <button class="power-btn" onclick="openGoalModal()">
+            +
+        </button>
+    </div>
+
+    <div id="goalList">
+        <div class="goal-empty">
+            <div class="goal-empty-icon">🏦</div>
+            <h3>Belum ada Goal</h3>
+            <p>Buat target tabungan pertamamu.</p>
+
+            <button class="goal-add-btn" onclick="openGoalModal()">
+                + Tambah Goal
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+<button class="nav-btn active" id="navHome" onclick="goPage('home')">
+<span class="nav-icon">⌂</span>Home
+    </button>
+<button class="nav-btn" id="navHistory2" onclick="goPage('history')">
+<span class="nav-icon">▤</span>Transaction
+    </button>
+<button class="nav-add" onclick="openQuickAction()">
+    +
+</button>
+<button class="nav-btn" id="navInsight" onclick="goPage('insight')">
+<span class="nav-icon">◔</span>Insight
+    </button>
+<button class="nav-btn" id="navBudget" onclick="goPage('budget')">
+<span class="nav-icon">🎯</span>Budget
+</button>
+<button class="nav-btn" id="navs" onclick="goPage('goals')">
+<span class="nav-icon">🏦</span>goals
+</button>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<button class="close-modal" onclick="closeModal()">✕</button>
+<div class="modal-handle"></div>
+<h2 id="modalTitle">Tambah transaksi</h2>
+<form id="txForm">
+<input id="editId" type="hidden" value=""/>
+<div class="type-toggle" id="typeToggle">
+<div class="type-btn active-income" data-type="income" id="btnIncome">Pemasukan</div>
+<div class="type-btn" data-type="expense" id="btnExpense">Pengeluaran</div>
+</div>
+<div class="field-label">Keterangan</div>
+<input id="descInput" placeholder="mis. Gaji, Makan siang" required="" type="text"/>
+<div class="field-label">Jumlah (Rp)</div>
+<input id="amountInput" min="0" placeholder="0" required="" step="1" type="number"/>
+<div class="field-label">Akun</div>
+<select id="accountInput">
+<option value="Tunai">Tunai</option>
+<option value="BCA">BCA </option>
+<option value="SeaBank">SeaBank </option>
+<option value="Bibit">Bibit </option>
+<option value="E-Wallet">E-Wallet</option>
+</select>
+<div class="field-label">Kategori</div>
+<select id="categoryInput">
+<option value="Umum">Umum</option>
+<option value="Makanan">Makanan</option>
+<option value="Transportasi">Transportasi</option>
+<option value="Belanja">Belanja</option>
+<option value="Tagihan">Tagihan</option>
+<option value="Hiburan">Hiburan</option>
+<option value="Gaji">Gaji</option>
+<option value="Investasi">Investasi</option>
+<option value="Lainnya">Lainnya</option>
+</select>
+<div class="field-label">Tanggal</div>
+<input id="dateInput" required="" type="date"/>
+<button class="submit" type="submit">Simpan transaksi</button>
+</form>
+</div>
+</div>
+<div class="modal-overlay" id="quickActionModal">
+<div class="modal">
+<button class="close-modal" onclick="closeQuickAction()">✕</button>
+<div class="modal-handle"></div>
+<h2>Quick Action</h2>
+<button class="submit" onclick="newIncome()">
+            💰 Tambah Pemasukan
+        </button>
+<button class="submit" onclick="newExpense()">
+            💸 Tambah Pengeluaran
+        </button>
+<button class="submit" onclick="openTransfer()">
+            🔄 Transfer
+        </button>
+<button class="submit" onclick="openGoalModal()">
+    🏦 Menabung
+</button>
+<button class="submit" onclick="openBudgetFromQuick()">
+            🎯 Budget Baru
+        </button>
+<button class="submit" onclick="alert('Tambah akun segera hadir')">
+            🏛 Tambah Akun
+        </button>
+</div>
+</div>
+<div class="modal-overlay" id="transferModal">
+<div class="modal">
+<button class="close-modal" onclick="closeTransfer()">✕</button>
+<div class="modal-handle"></div>
+<h2>Transfer Antar Akun</h2>
+<div class="field-label">Dari</div>
+<select id="transferFrom">
+<option>Tunai</option>
+<option>BCA</option>
+<option>SeaBank</option>
+<option>Bibit</option>
+<option>E-Wallet</option>
+</select>
+<div class="field-label">Ke</div>
+<select id="transferTo">
+<option>Tunai</option>
+<option>BCA</option>
+<option>SeaBank</option>
+<option>Bibit</option>
+<option>E-Wallet</option>
+</select>
+<div class="field-label">Jumlah</div>
+<input id="transferAmount" placeholder="0" type="number"/>
+<div class="field-label">Tanggal</div>
+<input id="transferDate" type="date"/>
+<button class="submit" onclick="saveTransfer()">
+
+            Transfer
+
+        </button>
+</div>
+</div>
+<div class="modal-overlay" id="budgetModal">
+<div class="modal">
+<button class="close-modal" onclick="closeBudgetModal()">✕</button>
+<div class="modal-handle"></div>
+<h2>Buat Budget Baru</h2>
+<div class="field-label">Kategori</div>
+<select id="budgetCategory">
+<option value="Makanan">🍔 Makanan</option>
+<option value="Transportasi">🚗 Transportasi</option>
+<option value="Belanja">🛍 Belanja</option>
+<option value="Tagihan">🧾 Tagihan</option>
+<option value="Hiburan">🎬 Hiburan</option>
+<option value="Investasi">📈 Investasi</option>
+<option value="Lainnya">✳ Lainnya</option>
+</select>
+<div class="field-label">Jumlah Budget</div>
+<input id="budgetAmount" type="number"/>
+<div class="field-label">Bulan</div>
+<input id="budgetMonth" type="month"/>
+<button class="submit" onclick="saveBudget()">
+            Simpan Budget
+        </button>
+</div>
+</div>
+<div class="modal-overlay" id="goalModal">
+<div class="modal">
+<button class="close-modal" onclick="closeGoalModal()">✕</button>
+<div class="modal-handle"></div>
+<h2>Buat Goal Baru</h2>
+<div class="field-label">Nama Goal</div>
+<input id="goalName" placeholder="Contoh: Beli Laptop" type="text"/>
+<div class="field-label">Target Tabungan</div>
+<input id="goalTarget" placeholder="10000000" type="number"/>
+<div class="field-label">Akun</div>
+<select id="goalAccount">
+<option value="Tunai">Tunai</option>
+<option value="BCA">BCA</option>
+<option value="SeaBank">SeaBank</option>
+<option value="Bibit">Bibit</option>
+<option value="E-Wallet">E-Wallet</option>
+</select>
+<div class="field-label">Target Tanggal</div>
+<input id="goalDate" type="date"/>
+<button class="submit" onclick="saveGoal()">
+            Simpan 
+        </button>
+</div>
+</div>
+<div class="modal-overlay" id="goalProgressModal">
+<div class="modal">
+<button class="close-modal" onclick="closeGoalProgressModal()">✕</button>
+<div class="modal-handle"></div>
+<h2>Update Progress</h2>
+<div class="field-label">Tambah Tabungan</div>
+<input id="goalProgressAmount" placeholder="0" type="number"/>
+<button class="submit" onclick="saveGoalProgress()">
+            Simpan
+        </button>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
