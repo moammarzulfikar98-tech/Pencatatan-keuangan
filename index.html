@@ -783,12 +783,38 @@
 </div>
 
 <div class="modal-overlay" id="goalModal">
-
     <div class="modal">
 
-        ...
-    </div>
+        <button class="close-modal"
+            onclick="closeGoalModal()">✕</button>
 
+        <div class="modal-handle"></div>
+
+        <h2>Buat Goal Baru</h2>
+
+        <div class="field-label">Nama Goal</div>
+        <input type="text" id="goalName" placeholder="Contoh: Beli Laptop">
+
+        <div class="field-label">Target Tabungan</div>
+        <input type="number" id="goalTarget" placeholder="10000000">
+
+        <div class="field-label">Akun</div>
+        <select id="goalAccount">
+            <option value="Tunai">Tunai</option>
+            <option value="BCA">BCA</option>
+            <option value="SeaBank">SeaBank</option>
+            <option value="Bibit">Bibit</option>
+            <option value="E-Wallet">E-Wallet</option>
+        </select>
+
+        <div class="field-label">Target Tanggal</div>
+        <input type="date" id="goalDate">
+
+        <button class="submit" onclick="saveGoal()">
+            Simpan Goal
+        </button>
+
+    </div>
 </div>
       
         <div class="field-label">
