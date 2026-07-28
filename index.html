@@ -105,6 +105,31 @@
 </div>
 </div>
 
+<div class="page" id="page-goals">
+    <div class="header">
+        <div>
+            <h1>Goals</h1>
+            <div class="greet">Target tabungan</div>
+        </div>
+
+        <button class="power-btn" onclick="openGoalModal()">
+            +
+        </button>
+    </div>
+
+    <div id="goalList">
+        <div class="goal-empty">
+            <div class="goal-empty-icon">🏦</div>
+            <h3>Belum ada Goal</h3>
+            <p>Buat target tabungan pertamamu.</p>
+
+            <button class="goal-add-btn" onclick="openGoalModal()">
+                + Tambah Goal
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="bottom-nav">
 <button class="nav-btn active" id="navHome" onclick="goPage('home')">
 <span class="nav-icon">⌂</span>Home
@@ -121,8 +146,8 @@
 <button class="nav-btn" id="navBudget" onclick="goPage('budget')">
 <span class="nav-icon">🎯</span>Budget
 </button>
-<button class="nav-btn" id="navs" onclick="goPage('s')">
-<span class="nav-icon">🏦</span>s
+<button class="nav-btn" id="navs" onclick="goPage('goals')">
+<span class="nav-icon">🏦</span>goals
 </button>
 </div>
 
@@ -181,7 +206,7 @@
 <button class="submit" onclick="openTransfer()">
             🔄 Transfer
         </button>
-<button class="submit" onclick="openModal()">
+<button class="submit" onclick="openGoalModal()">
     🏦 Menabung
 </button>
 <button class="submit" onclick="openBudgetFromQuick()">
@@ -248,7 +273,7 @@
         </button>
 </div>
 </div>
-<div class="modal-overlay" id="Modal">
+<div class="modal-overlay" id="goalModal">
 <div class="modal">
 <button class="close-modal" onclick="closeModal()">✕</button>
 <div class="modal-handle"></div>
@@ -267,7 +292,7 @@
 </select>
 <div class="field-label">Target Tanggal</div>
 <input id="Date" type="date"/>
-<button class="submit" onclick="save()">
+<button class="submit" onclick="saveGoal()">
             Simpan 
         </button>
 </div>
