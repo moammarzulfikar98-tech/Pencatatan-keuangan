@@ -848,6 +848,7 @@ let transactions = [];
 let budgets = [];
 let currentType = 'income';
 let categoryChart = null;
+let goals = [];
 
 const supabaseClient = window.supabase.createClient(
     "https://tcmngkjrgkmtvdnyydqc.supabase.co",
@@ -1023,6 +1024,17 @@ async function saveBudget(){
     period: month
 }]);
 
+  const { data: goalData, error: goalError } =
+await supabaseClient
+    .from("goals")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+if(goalError){
+    console.error(goalError);
+}else{
+    goals = goalData || [];
+}
     if(error){
         console.log(error);
         alert(error.message);
